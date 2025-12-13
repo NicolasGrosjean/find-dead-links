@@ -10,6 +10,7 @@ an extremely fast Python package and project manager, written in Rust.
 ```shell
 uv sync
 uv run pre-commit install
+uv run python -m playwright install
 ```
 
 ## [Activate environment](https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment)
@@ -30,10 +31,11 @@ source .venv/bin/activate
 
 ## Run
 
-Update paratranz with the following command
+Scrap website with the following command
 
 ```shell
-uv run find_dead_links/placeholder.py
+cd find_dead_links
+scrapy crawl complex_website_links -O links.json -L INFO
 ```
 
 ## Tests
@@ -48,4 +50,10 @@ task test
 
 ```bash
 task test-windows
+```
+
+## Pre-commit
+
+```bash
+task pre-commit
 ```

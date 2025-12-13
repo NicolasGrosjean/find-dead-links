@@ -26,11 +26,14 @@ target-version = "py313"
 select = ["ALL"]
 ignore = [
     "ARG002", # Unused method argument
+    "ANN204", # Missing return type annotation for special method `__init__`
     "C408", # Unnecessary `dict()` call (rewrite as a literal)
     "COM812", # Unused variable
     "D100", # Missing docstring in public module
     "FIX002", # Line contains TODO
+    "G004", # Logging statement uses f-string
     "PLR0913", # Too many arguments in function definition
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
     "TD002", # Missing author in TODO
     "TD003", # Missing issue link for this TODO
     "TD004", # Missing colon in TODO
@@ -51,6 +54,9 @@ unfixable = []
     "S101", # Use of `assert` detected
     "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
     "SLF001", # Private member accessed
+]
+"**/settings.py" = [
+    "ERA001", # Found commented-out code
 ]
 
 [lint.pydocstyle]
