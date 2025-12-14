@@ -1,5 +1,6 @@
 """Scrapy spider to scrape alll the links reachable from a website."""
 
+import json
 from collections.abc import AsyncGenerator, Generator
 
 import scrapy
@@ -17,7 +18,9 @@ class ComplexWebsiteLinksSpider(scrapy.Spider):
     name = "complex_website_links"
     handle_httpstatus_all = True
 
-    visited_websites: set[str] = set()
+    _visited_websites: set[str] = set()
+    _previously_parsed_pages: dict[str, list[dict[str, str]]] = dict()
+    _previously_yield_pages: set[str] = set()
 
     # Inline settings to ensure correct handler/middleware loading
     custom_settings = {
@@ -34,13 +37,20 @@ class ComplexWebsiteLinksSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self._base_url = base_url or "http://localhost:3000"
         self.start_urls = [f"{self._base_url}/fr", f"{self._base_url}/en"]
+        with open("links.backup.json", encoding="utf-8") as f:
+            self._previous_results = json.load(f)
+            for result in self._previous_results:
+                self._visited_websites.add(result["url"].rstrip("/"))
+                if result["source_url"] not in self._previously_parsed_pages:
+                    self._previously_parsed_pages[result["source_url"]] = []
+                self._previously_parsed_pages[result["source_url"]].append(result)
 
     def start_requests(self) -> Generator[scrapy.Request]:
         """Generate initial requests to start scraping."""
         for url in self.start_urls:
             yield scrapy.Request(url, callback=self.parse, meta=PLAYWRIGHT_PARAMS)
 
-    async def parse(self, response: Response) -> AsyncGenerator[dict]:
+    async def parse(self, response: Response) -> AsyncGenerator[dict | scrapy.Request | None]:
         """Parse a page and extract links."""
         self.logger.info(f"Parsing URL: {response.url}")
 
@@ -81,12 +91,16 @@ class ComplexWebsiteLinksSpider(scrapy.Spider):
             if url.startswith(self._base_url):
                 if url.startswith(f"{self._base_url}/_nuxt"):
                     continue
-                yield scrapy.Request(url, callback=self.parse, meta=PLAYWRIGHT_PARAMS)  # type: ignore[misc]
-            elif url.rstrip("/") not in self.visited_websites:
-                self.visited_websites.add(url.rstrip("/"))
+                # TODO Debug it
+                if url.rstrip("/") in self._previously_parsed_pages:
+                    self._yield_previous_results(url)
+                else:
+                    yield scrapy.Request(url, callback=self.parse, meta=PLAYWRIGHT_PARAMS)
+            elif url.rstrip("/") not in self._visited_websites:
+                self._visited_websites.add(url.rstrip("/"))
                 yield scrapy.Request(
                     url, callback=self._check_status, meta={"source_url": response.url}, dont_filter=True
-                )  # type: ignore[misc]
+                )
             else:
                 self.logger.debug(f"Already visited URL: {url}")
                 yield {
@@ -97,7 +111,11 @@ class ComplexWebsiteLinksSpider(scrapy.Spider):
 
         # Parse the other pages by incrementing numerical parameters in the URL
         for new_url in self._generate_urls_to_parse(response.url):
-            yield scrapy.Request(new_url, callback=self.parse, meta=PLAYWRIGHT_PARAMS)  # type: ignore[misc]
+            url_to_parse = new_url.strip("/")
+            while url_to_parse in self._previously_parsed_pages:
+                self._yield_previous_results(url_to_parse)
+                url_to_parse = self._generate_urls_to_parse(url_to_parse).__next__()
+            yield scrapy.Request(url_to_parse, callback=self.parse, meta=PLAYWRIGHT_PARAMS)
 
     def _check_status(self, response: Response) -> dict:
         """Check the status of an external link."""
@@ -124,3 +142,11 @@ class ComplexWebsiteLinksSpider(scrapy.Spider):
                 continue
             yield url[: start_index + 1] + str(int(value) + 1) + url[end_index:]
             start_index = end_index
+
+    def _yield_previous_results(self, url: str) -> Generator[dict]:
+        """Yield previously parsed results that were not yielded during parsing."""
+        if url.rstrip("/") in self._previously_yield_pages:
+            return
+        self.logger.info(f"Already parsed URL from previous results: {url}")
+        self._previously_yield_pages.add(url.rstrip("/"))
+        yield from self._previously_parsed_pages[url.rstrip("/")]
