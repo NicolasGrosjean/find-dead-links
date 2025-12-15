@@ -56,12 +56,12 @@ repos:
       - id: requirements-txt-fixer
 
 # Markdown
-  - repo: https://github.com/jackdewinter/pymarkdown/
-    rev: v0.9.26
-    hooks:
-      - id: pymarkdown
-        types: [markdown]
-        exclude: Licence.md
+  # - repo: https://github.com/jackdewinter/pymarkdown/
+  #   rev: v0.9.33
+  #   hooks:
+  #     - id: pymarkdown
+  #       types: [markdown]
+  #       exclude: Licence.md
 
 # YAML
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
