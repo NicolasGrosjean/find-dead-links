@@ -2,7 +2,6 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from loguru import logger
 
 MARKDOWN_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^\)]+)\)")
 
@@ -20,7 +19,6 @@ def search_links_in_markdown_files(directory: Path) -> pd.DataFrame:
     """
     dataframes: list[pd.DataFrame] = []
     for file_path in directory.rglob("*.md"):
-        logger.info(f"Searching links in file: {file_path}")
         with Path.open(file_path) as file:
             content = file.read()
             df_file_links = _search_links_in_markdown_text(content)

@@ -7,7 +7,7 @@
 This project use [uv](https://docs.astral.sh/uv/),
 an extremely fast Python package and project manager, written in Rust.
 
-```shell
+```bash
 uv sync
 uv run pre-commit install
 uv run python -m playwright install
@@ -29,11 +29,28 @@ source .venv/bin/activate
 .venv\Scripts\activate
 ```
 
-## Run
+## Run the search against files
+
+Assuming, the content in which we want to find links is in `../resources-center/content`,
+and we want the result into `links.csv`.
+
+**macOS/Linux** :
+
+```bash
+PYTHONPATH=$PWD uv run python find_dead_links/analyse_links_from_files.py ../resources-center/content links.csv
+```
+
+**windows** :
+
+```bash
+set PYTHONPATH=%CD%/..;%PYTHONPATH% && uv run python find_dead_links/analyse_links_from_files.py ../resources-center/content links.csv
+```
+
+## Run the scraping
 
 Scrap website with the following command
 
-```shell
+```bash
 cd find_dead_links
 scrapy crawl complex_website_links -O links.json -L INFO
 ```
