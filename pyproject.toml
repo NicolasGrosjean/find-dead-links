@@ -15,8 +15,8 @@ classifiers = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "scrapy>=2.13.4,<3.0.0",
-    "scrapy-playwright>=0.0.44,<1.0.0",
+    "loguru>=0.7.3,<1.0.0",
+    "pandas>=2.3.3,<3.0.0",
 ]
 
 [dependency-groups]
@@ -28,6 +28,10 @@ dev = [
     "pytest-mock>=3.14.0,<4",
     "ruff>=0.9.2,<1",
     "taskipy>=1.14.1,<2",
+]
+scrapy = [
+    "scrapy>=2.13.4,<3.0.0",
+    "scrapy-playwright>=0.0.44,<1.0.0",
 ]
 
 [project.urls]
@@ -98,7 +102,6 @@ exclude_lines = [
     "raise AssertionError",
     "raise NotImplementedError",
     # Don't complain if non-runnable code isn't run:
-    "if 0:",
     "if __name__ == .__main__.:",
 ]
 
@@ -110,7 +113,7 @@ plugins.line-length.code_block_line_length = 88
 plugins.ul-style.style = "sublist"
 
 [tool.taskipy.tasks]
-test = "PYTHONPATH=$(workspaceFolder) uv run pytest tests/"
+test = "PYTHONPATH=$PWD uv run pytest tests/"
 test-windows = "set PYTHONPATH=%CD%/..;%PYTHONPATH%&& uv run pytest tests/"
 format = "uv run ruff format ."
 lint = "uv run ruff check . && ruff format --check --diff ."
