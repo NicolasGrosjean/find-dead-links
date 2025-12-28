@@ -46,6 +46,8 @@ PYTHONPATH=$PWD uv run python find_dead_links/analyse_links_from_files.py ../res
 set PYTHONPATH=%CD%/..;%PYTHONPATH% && uv run python find_dead_links/analyse_links_from_files.py ../resources-center/content links.csv http://localhost:3000
 ```
 
+We can add `--try-again` to retry again non reachable links.
+
 ## Run the scraping
 
 Scrap website with the following command

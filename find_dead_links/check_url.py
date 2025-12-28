@@ -1,8 +1,21 @@
 import time
 
 import requests
+import urllib3
+
+urllib3.disable_warnings()
 
 HTTP_OK = 200
+FORBIDDEN = 403
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+}
 
 
 def check_url(url: str, website_domain: str, sleep_time: float = 0.1, timeout: int = 5) -> tuple[bool, str]:
@@ -26,6 +39,9 @@ def check_url(url: str, website_domain: str, sleep_time: float = 0.1, timeout: i
     try:
         response = requests.head(url, allow_redirects=True, timeout=timeout)
         time.sleep(sleep_time)
+        if response.status_code == FORBIDDEN:
+            response = requests.head(url, headers=HEADERS, allow_redirects=True, timeout=timeout, verify=False)  # noqa: S501
+            time.sleep(sleep_time)
     except requests.RequestException as e:
         return False, str(e)
     else:

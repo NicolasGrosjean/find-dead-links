@@ -10,10 +10,10 @@ authors = [
 dynamic = ["version"]
 classifiers = [
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "loguru>=0.7.3,<1.0.0",
     "pandas>=2.3.3,<3.0.0",
