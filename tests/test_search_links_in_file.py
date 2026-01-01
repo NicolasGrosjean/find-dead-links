@@ -63,6 +63,22 @@ class TestSearchLinksInMarkdownFiles:
         assert df_links.iloc[0]["text"] == "link text"
         assert df_links.iloc[0]["url"] == "/example"
 
+    def test_when_file_with_mailto_link_then_empty_dataframe(
+        self,
+        tmp_path: Path,
+    ):
+        (tmp_path / "test.md").write_text("[email me](mailto:example@example.com)")
+        df_links = search_links_in_markdown_files(tmp_path)
+        assert df_links.empty
+
+    def test_when_file_with_tel_link_then_empty_dataframe(
+        self,
+        tmp_path: Path,
+    ):
+        (tmp_path / "test.md").write_text("[phone me](tel:+1234567890)")
+        df_links = search_links_in_markdown_files(tmp_path)
+        assert df_links.empty
+
     def test_when_file_with_multiple_links_then_dataframe_with_all_links(
         self,
         tmp_path: Path,

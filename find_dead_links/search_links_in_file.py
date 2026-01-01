@@ -34,5 +34,5 @@ def search_links_in_markdown_files(directory: Path) -> pd.DataFrame:
 def _search_links_in_markdown_text(text: str) -> pd.DataFrame:
     # Regex to find markdown links: [text](url)
     matches = re.findall(MARKDOWN_LINK_PATTERN, text)
-    data = [{"text": m[0], "url": m[1]} for m in matches]
+    data = [{"text": m[0], "url": m[1]} for m in matches if not m[1].startswith(("mailto:", "tel:"))]
     return pd.DataFrame(data)
