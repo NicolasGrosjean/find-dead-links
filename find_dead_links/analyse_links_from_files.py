@@ -28,7 +28,7 @@ def analyse_links_from_files(
         logger.info(f"Retrying {len(unreachable_urls)} previously unreachable URLs.")
         df_urls = pd.DataFrame(unreachable_urls, columns=["url"])
         df_urls["is_reachable"], df_urls["error_message"] = zip(
-            *df_urls["url"].map(lambda url: check_url(url, website_domain)), strict=True
+            *df_urls["url"].map(lambda url: _check_non_archive_url(url, website_domain)), strict=True
         )
         logger.info(f"{(~df_urls['is_reachable']).sum()} URLs are still not reachable after retrying.")
         # Merge updated results back into the original links dataframe
@@ -41,7 +41,7 @@ def analyse_links_from_files(
         df_urls = pd.DataFrame(df_links["url"].unique(), columns=["url"])
         logger.info(f"Checking reachability of {len(df_urls)} unique URLs.")
         df_urls["is_reachable"], df_urls["error_message"] = zip(
-            *df_urls["url"].map(lambda url: check_url(url, website_domain)), strict=True
+            *df_urls["url"].map(lambda url: _check_non_archive_url(url, website_domain)), strict=True
         )
         logger.info(f"{(~df_urls['is_reachable']).sum()} URLs are not reachable after retrying.")
         df_links = df_links.merge(df_urls, on="url", how="left")
@@ -54,6 +54,14 @@ def analyse_links_from_files(
             unreachables_url[i] = website_domain.rstrip("/") + unreachables_url[i]
     pd.DataFrame(sorted(unreachables_url)).to_csv(unreachable_output_path, index=False, header=False)
     logger.info(f"Unreachable URLs saved to {unreachable_output_path}.")
+
+
+def _check_non_archive_url(
+    url: str, website_domain: str, sleep_time: float = 0.1, timeout: int = 5
+) -> tuple[bool, str]:
+    if url.startswith("https://web.archive.org"):
+        return True, ""
+    return check_url(url, website_domain, sleep_time, timeout)
 
 
 if __name__ == "__main__":
