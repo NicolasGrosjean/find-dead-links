@@ -22,6 +22,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "genbadge[all]>=1.1.1,<2.0.0",
     "mypy>=1.14.1,<2",
     "pre-commit>=4.1.0,<5",
     "pytest>=8.3.4,<9",
@@ -89,6 +90,10 @@ addopts = '''
 [tool.coverage.run]
 branch = true
 data_file = ".coverage/default_output"
+omit = [
+    "tests/*",
+    "find_dead_links/scrapping/*",
+]
 
 [tool.coverage.html]
 directory = ".coverage/html_output"

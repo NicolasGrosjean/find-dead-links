@@ -1,6 +1,11 @@
+[![Build Status](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
+[![Tests](badges/tests.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
+[![Coverage](badges/coverage.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
+
+
 # Find dead links
 
-> Scrap website to find dead links
+> Scrap website (or analyse the markdown files) to find dead links
 
 ## Install
 
