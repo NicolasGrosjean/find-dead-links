@@ -20,7 +20,7 @@ uv run python -m playwright install
 
 ## [Activate environment](https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment)
 
-Useful to run `task` commands
+Useful to run `task` commands, you can skip this part to run with docker
 
 **macOS/Linux** :
 
@@ -39,6 +39,8 @@ source .venv/bin/activate
 Assuming, the content in which we want to find links is in `../resources-center/content`,
 and we want the result into `links.csv`.
 
+Nota: We can add `--try-again` to retry again non reachable links.
+
 **macOS/Linux** :
 
 ```bash
@@ -51,7 +53,18 @@ PYTHONPATH=$PWD uv run python find_dead_links/analyse_links_from_files.py ../res
 set PYTHONPATH=%CD%/..;%PYTHONPATH% && uv run python find_dead_links/analyse_links_from_files.py ../resources-center/content links.csv http://localhost:3000
 ```
 
-We can add `--try-again` to retry again non reachable links.
+**docker** :
+
+```bash
+docker run --rm --name find_dead_links_from_markdown -e DIR_TO_ANALYSE=/data -e OUTPUT_FILE=/data/links.csv -v  $(pwd)/../resources-center/content:/data docker.io/nicolasgrosjean38/find_dead_links_from_markdown
+```
+
+Nota: the docker image is built and published with the folowwing commands
+
+```bash
+docker build -t docker.io/nicolasgrosjean38/find_dead_links_from_markdown .
+docker push docker.io/nicolasgrosjean38/find_dead_links_from_markdown
+```
 
 ## Run the scraping
 
