@@ -1,6 +1,7 @@
 [![Build Status](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
 [![Tests](badges/tests.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
 [![Coverage](badges/coverage.svg)](https://github.com/NicolasGrosjean/find-dead-links/actions/workflows/lint_and_test.yml)
+[![Docker](badges/docker.svg)](https://hub.docker.com/r/nicolasgrosjean38/find_dead_links_from_markdown)
 
 
 # Find dead links
@@ -15,6 +16,8 @@ an extremely fast Python package and project manager, written in Rust.
 ```bash
 uv sync
 uv run pre-commit install
+
+# Install playwright for the scrapping, not necessary for find dead links from markdown files
 uv run python -m playwright install
 ```
 
@@ -62,8 +65,11 @@ docker run --rm --name find_dead_links_from_markdown -e DIR_TO_ANALYSE=/data -e 
 Nota: the docker image is built and published with the folowwing commands
 
 ```bash
-docker build -t docker.io/nicolasgrosjean38/find_dead_links_from_markdown .
-docker push docker.io/nicolasgrosjean38/find_dead_links_from_markdown
+export DOCKER_IMAGE_VERSION="1.0.0"
+docker build -t docker.io/nicolasgrosjean38/find_dead_links_from_markdown:$DOCKER_IMAGE_VERSION .
+docker login docker.io -u nicolasgrosjean38
+# Fill with token get from https://app.docker.com/accounts/nicolasgrosjean38/settings/personal-access-tokens
+docker push docker.io/nicolasgrosjean38/find_dead_links_from_markdown:$DOCKER_IMAGE_VERSION
 ```
 
 ## Run the scraping

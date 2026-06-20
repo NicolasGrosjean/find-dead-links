@@ -7,7 +7,7 @@ MARKDOWN_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^\)]+)\)")
 
 
 def search_links_in_markdown_files(directory: Path) -> pd.DataFrame:
-    """Search for links in all markdown files within the given directory.
+    """Search for links in all markdown files (except readme.md) within the given directory.
 
     Args:
         directory (Path): The directory to search for markdown files.
@@ -19,6 +19,8 @@ def search_links_in_markdown_files(directory: Path) -> pd.DataFrame:
     """
     dataframes: list[pd.DataFrame] = []
     for file_path in directory.rglob("*.md"):
+        if "readme.md" in str(file_path).lower():
+            continue
         with Path.open(file_path) as file:
             content = file.read()
             df_file_links = _search_links_in_markdown_text(content)

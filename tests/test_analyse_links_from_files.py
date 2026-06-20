@@ -112,3 +112,28 @@ class TestAnalyseLinksFromFiles:
             }
         )
         pd.testing.assert_frame_equal(actual, expected)
+
+    def test_no_readme_read(self, tmp_path: Path):
+        (tmp_path / "file1.md").write_text("[valid link](https://www.cartong.org)\n")
+        (tmp_path / "README.md").write_text("[invalid link](https://www.cartong.org/invalid)\n")
+        output_path = tmp_path / "output.csv"
+        unreachable_output_path = tmp_path / "unreachables.csv"
+        analyse_links_from_files(
+            directory=tmp_path,
+            output_path=output_path,
+            website_domain="",
+            unreachable_output_path=unreachable_output_path,
+            try_again=False,
+        )
+        actual = pd.read_csv(output_path)
+        actual["error_message"] = actual["error_message"].fillna("")
+        expected = pd.DataFrame(
+            {
+                "file_path": ["file1.md"],
+                "text": ["valid link"],
+                "url": ["https://www.cartong.org"],
+                "is_reachable": [True],
+                "error_message": [""],
+            }
+        )
+        pd.testing.assert_frame_equal(actual, expected)
